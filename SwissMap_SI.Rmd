@@ -1,0 +1,43 @@
+---
+title: "Map SI"
+author: "SIL"
+date: "12 November 2018"
+output:
+  html_document: default
+  always_allow_html: yes
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## R Markdown
+
+
+```{r prep}
+library(leaflet)
+library(raster)
+#get boundaries
+swiss <- getData("GADM", country="Switzerland", level=1)
+#add random data
+swiss$randomData <- rnorm(n=nrow(swiss), 150, 30)
+pal <- colorQuantile("Greens", NULL, n = 5)
+
+polygon_popup <- paste0("<strong>Name: </strong>", swiss$NAME_1, "<br>",
+                        "<strong>Indicator: </strong>", round(swiss$randomData,2))
+
+#create leaflet map
+  map = leaflet() %>% 
+      addProviderTiles("CartoDB.Positron") %>% 
+      setView(10, 45,
+              zoom = 6) %>% 
+      addPolygons(data = swiss, 
+                  fillColor= ~pal(randomData),
+                  fillOpacity = 0.4, 
+                  weight = 2, 
+                  color = "white",
+                  popup = polygon_popup)
+map
+```
